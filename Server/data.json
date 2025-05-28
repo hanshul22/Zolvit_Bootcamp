@@ -1,0 +1,5 @@
+[
+    { "name": "Laptop", "price": 999, "category": "Electronics" },
+    { "name": "Book", "price": 19, "category": "Education" },
+    { "name": "Headphones", "price": 199, "category": "Electronics" }
+]
