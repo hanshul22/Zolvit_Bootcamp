@@ -2,6 +2,45 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 require('dotenv').config()
+const mongoose = require('mongoose');
+
+
+
+
+
+
+
+// uploadData.js
+const fs = require('fs');
+const { connectDB, Product } = require('./dbConnect');
+
+async function uploadData() {
+    try {
+        await connectDB();
+
+        // Read JSON file
+        const rawData = fs.readFileSync('data.json');
+        const products = JSON.parse(rawData);
+
+        // Insert into DB
+        const result = await Product.insertMany(products);
+        console.log(`✅ Inserted ${result.length} products`);
+
+    } catch (err) {
+        console.error('❌ Error uploading data:', err);
+    } finally {
+        await mongoose.disconnect();
+        console.log('🔌 Disconnected from MongoDB');
+    }
+}
+
+connectDB();
+
+uploadData();
+
+
+
+
 
 app.get('/', (req, res) => {
   res.send(`
