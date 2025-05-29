@@ -2,42 +2,26 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 require('dotenv').config()
-const mongoose = require('mongoose');
+const User = require('./model/userModel');
 
-
-
-
-
-
-
-// uploadData.js
-const fs = require('fs');
-const { connectDB, Product } = require('./dbConnect');
-
-async function uploadData() {
-    try {
-        await connectDB();
-
-        // Read JSON file
-        const rawData = fs.readFileSync('data.json');
-        const products = JSON.parse(rawData);
-
-        // Insert into DB
-        const result = await Product.insertMany(products);
-        console.log(`✅ Inserted ${result.length} products`);
-
-    } catch (err) {
-        console.error('❌ Error uploading data:', err);
-    } finally {
-        await mongoose.disconnect();
-        console.log('🔌 Disconnected from MongoDB');
-    }
-}
+const connectDB = require('./DB/db');
 
 connectDB();
 
-uploadData();
+app.use(express.json());
+// Example route to create a user (for testing)
 
+
+
+app.post('/users', async (req, res) => {
+  try {
+      const user = new User(req.body);
+      const savedUser = await user.save();
+      res.status(201).json(savedUser);
+  } catch (err) {
+      res.status(400).json({ error: err.message });
+  }
+});
 
 
 
@@ -51,21 +35,8 @@ app.get('/', (req, res) => {
   `);
 });
 
-app.get('/data', (req, res) => {
-  res.json({ message: 'Hello from the server' });
-});
+
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
-
-
-const eventsLogger = require('./TaskFiles/eventsLogger');
-
-// Register listeners once at app start
-eventsLogger.registerListeners();
-
-// Simulate user actions:
-eventsLogger.logEvent('userLogin', 'alice');
-eventsLogger.logEvent('itemPurchased', { username: 'alice', itemName: 'Pro Plan' });
-eventsLogger.logEvent('userLogout', 'alice');
