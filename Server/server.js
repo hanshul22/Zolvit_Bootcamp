@@ -2,28 +2,16 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 require('dotenv').config()
-const User = require('./model/userModel');
+const userRoutes = require('./Routes/userRoutes');
 
 const connectDB = require('./DB/db');
 
 connectDB();
 
 app.use(express.json());
-// Example route to create a user (for testing)
 
 
-
-app.post('/users', async (req, res) => {
-  try {
-      const user = new User(req.body);
-      const savedUser = await user.save();
-      res.status(201).json(savedUser);
-  } catch (err) {
-      res.status(400).json({ error: err.message });
-  }
-});
-
-
+app.use('/users', userRoutes);
 
 
 app.get('/', (req, res) => {
@@ -34,7 +22,6 @@ app.get('/', (req, res) => {
     </html>
   `);
 });
-
 
 
 app.listen(port, () => {
