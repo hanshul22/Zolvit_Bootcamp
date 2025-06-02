@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan');
 require('dotenv').config();
 
 const app = express();
@@ -7,9 +8,13 @@ const port = process.env.PORT || 3000;
 
 // Import routes
 const userRoutes = require('./Routes/userRoutes');
+const testRoutes = require('./Routes/testRoutes');
 
 // Import database connection
 const connectDB = require('./DB/db');
+
+// Import custom error handler
+const { globalErrorHandler, handleNotFound } = require('./middleware/errorHandler');
 
 // Connect to database
 connectDB();
@@ -19,7 +24,14 @@ app.use(cors()); // Enable CORS for all routes
 app.use(express.json({ limit: '10mb' })); // Parse JSON bodies with size limit
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
-// Logging middleware
+// Morgan logging middleware
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev')); // Detailed logging for development
+} else {
+  app.use(morgan('combined')); // Standard Apache combined log format for production
+}
+
+// Custom logging middleware (keeping for additional custom logs if needed)
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
   next();
@@ -27,6 +39,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/test', testRoutes);
 
 // Default route
 app.get('/', (req, res) => {
@@ -41,28 +54,24 @@ app.get('/', (req, res) => {
       getUserById: 'GET /api/users/:id',
       updateUser: 'PUT /api/users/:id',
       deleteUser: 'DELETE /api/users/:id'
+    },
+    testing: {
+      errorTests: '/api/test',
+      description: 'Visit /api/test to see available error testing routes'
+    },
+    features: {
+      errorHandling: 'Custom error handler with detailed logging',
+      logging: 'Morgan HTTP request logging',
+      environment: process.env.NODE_ENV || 'development'
     }
   });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route not found',
-    error: `The endpoint ${req.method} ${req.originalUrl} does not exist`
-  });
-});
+// Handle unhandled routes (404 errors)
+app.all('*', handleNotFound);
 
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('Error:', err.stack);
-  res.status(500).json({
-    success: false,
-    message: 'Internal server error',
-    error: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong!'
-  });
-});
+// Global error handling middleware (must be last)
+app.use(globalErrorHandler);
 
 // Start server
 app.listen(port, () => {
@@ -71,6 +80,8 @@ app.listen(port, () => {
     📝 API Documentation available at http://localhost:${port}
     🔗 Users API: http://localhost:${port}/api/users
     📅 Started at: ${new Date().toISOString()}
+    🌍 Environment: ${process.env.NODE_ENV || 'development'}
+    📊 Logging: Morgan ${process.env.NODE_ENV === 'development' ? 'dev' : 'combined'} format
   `);
 });
 
