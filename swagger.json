@@ -1,0 +1,778 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "User Management API",
+    "description": "A comprehensive RESTful API for user management with CRUD operations, error handling, and testing endpoints. Built with Express.js following MVC architecture pattern.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "ISC",
+      "url": "https://opensource.org/licenses/ISC"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "API Information",
+        "description": "Returns comprehensive information about the API including available endpoints, features, and configuration",
+        "operationId": "getApiInfo",
+        "tags": ["General"],
+        "responses": {
+          "200": {
+            "description": "API information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "post": {
+        "summary": "Create User",
+        "description": "Create a new user with name, email, and password",
+        "operationId": "createUser",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get All Users",
+        "description": "Retrieve a list of all users in the system",
+        "operationId": "getAllUsers",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsersListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "summary": "Get User by ID",
+        "description": "Retrieve a specific user by their unique identifier",
+        "operationId": "getUserById",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the user",
+            "schema": {
+              "type": "string",
+              "example": "60a7c8b4f3b2c1a2b3c4d5e6"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update User",
+        "description": "Update an existing user's information",
+        "operationId": "updateUser",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the user to update",
+            "schema": {
+              "type": "string",
+              "example": "60a7c8b4f3b2c1a2b3c4d5e6"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete User",
+        "description": "Delete a user from the system",
+        "operationId": "deleteUser",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the user to delete",
+            "schema": {
+              "type": "string",
+              "example": "60a7c8b4f3b2c1a2b3c4d5e6"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test": {
+      "get": {
+        "summary": "Get Test Routes Information",
+        "description": "Retrieve information about all available error testing routes",
+        "operationId": "getTestInfo",
+        "tags": ["Testing"],
+        "responses": {
+          "200": {
+            "description": "Test routes information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestInfoResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/success": {
+      "get": {
+        "summary": "Test Success Response",
+        "description": "Returns a successful response for testing purposes",
+        "operationId": "testSuccess",
+        "tags": ["Testing"],
+        "responses": {
+          "200": {
+            "description": "Successful test response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessTestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/400-error": {
+      "get": {
+        "summary": "Test 400 Bad Request Error",
+        "description": "Triggers a 400 Bad Request error for testing error handling",
+        "operationId": "test400Error",
+        "tags": ["Testing"],
+        "responses": {
+          "400": {
+            "description": "Bad Request error for testing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/401-error": {
+      "get": {
+        "summary": "Test 401 Unauthorized Error",
+        "description": "Triggers a 401 Unauthorized error for testing error handling",
+        "operationId": "test401Error",
+        "tags": ["Testing"],
+        "responses": {
+          "401": {
+            "description": "Unauthorized error for testing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/403-error": {
+      "get": {
+        "summary": "Test 403 Forbidden Error",
+        "description": "Triggers a 403 Forbidden error for testing error handling",
+        "operationId": "test403Error",
+        "tags": ["Testing"],
+        "responses": {
+          "403": {
+            "description": "Forbidden error for testing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/404-error": {
+      "get": {
+        "summary": "Test 404 Not Found Error",
+        "description": "Triggers a 404 Not Found error for testing error handling",
+        "operationId": "test404Error",
+        "tags": ["Testing"],
+        "responses": {
+          "404": {
+            "description": "Not Found error for testing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/500-error": {
+      "get": {
+        "summary": "Test 500 Internal Server Error",
+        "description": "Triggers a 500 Internal Server Error for testing error handling",
+        "operationId": "test500Error",
+        "tags": ["Testing"],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error for testing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/async-error": {
+      "get": {
+        "summary": "Test Async Error Handling",
+        "description": "Triggers an asynchronous error for testing async error handling",
+        "operationId": "testAsyncError",
+        "tags": ["Testing"],
+        "responses": {
+          "500": {
+            "description": "Async error for testing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/cast-error": {
+      "get": {
+        "summary": "Test MongoDB Cast Error",
+        "description": "Triggers a MongoDB-like cast error for testing database error handling",
+        "operationId": "testCastError",
+        "tags": ["Testing"],
+        "responses": {
+          "400": {
+            "description": "Cast error for testing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/validation-error": {
+      "get": {
+        "summary": "Test Validation Error",
+        "description": "Triggers a validation error for testing input validation error handling",
+        "operationId": "testValidationError",
+        "tags": ["Testing"],
+        "responses": {
+          "400": {
+            "description": "Validation error for testing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the user",
+            "example": "60a7c8b4f3b2c1a2b3c4d5e6"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full name of the user",
+            "minLength": 2,
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "john.doe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "minLength": 6,
+            "example": "securepassword123"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "User creation timestamp",
+            "example": "2023-07-03T10:30:00.000Z"
+          }
+        },
+        "required": ["name", "email", "password"]
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Full name of the user",
+            "minLength": 2,
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "john.doe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "minLength": 6,
+            "example": "securepassword123"
+          }
+        },
+        "required": ["name", "email", "password"]
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Full name of the user",
+            "minLength": 2,
+            "example": "John Doe Updated"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "john.doe.updated@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "minLength": 6,
+            "example": "newsecurepassword123"
+          }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "User created successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      },
+      "UsersListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Users retrieved successfully"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Failed to create user"
+          },
+          "error": {
+            "type": "string",
+            "example": "Email is required"
+          }
+        }
+      },
+      "ApiInfo": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Welcome to the User Management API"
+          },
+          "version": {
+            "type": "string",
+            "example": "1.0.0"
+          },
+          "endpoints": {
+            "type": "object",
+            "properties": {
+              "users": {
+                "type": "string",
+                "example": "/api/users"
+              },
+              "createUser": {
+                "type": "string",
+                "example": "POST /api/users"
+              },
+              "getUsers": {
+                "type": "string",
+                "example": "GET /api/users"
+              },
+              "getUserById": {
+                "type": "string",
+                "example": "GET /api/users/:id"
+              },
+              "updateUser": {
+                "type": "string",
+                "example": "PUT /api/users/:id"
+              },
+              "deleteUser": {
+                "type": "string",
+                "example": "DELETE /api/users/:id"
+              }
+            }
+          },
+          "testing": {
+            "type": "object",
+            "properties": {
+              "errorTests": {
+                "type": "string",
+                "example": "/api/test"
+              },
+              "description": {
+                "type": "string",
+                "example": "Visit /api/test to see available error testing routes"
+              }
+            }
+          },
+          "features": {
+            "type": "object",
+            "properties": {
+              "errorHandling": {
+                "type": "string",
+                "example": "Custom error handler with detailed logging"
+              },
+              "logging": {
+                "type": "string",
+                "example": "Morgan HTTP request logging"
+              },
+              "environment": {
+                "type": "string",
+                "example": "development"
+              }
+            }
+          }
+        }
+      },
+      "TestInfoResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Error Testing Routes"
+          },
+          "description": {
+            "type": "string",
+            "example": "Use these routes to test different error scenarios"
+          },
+          "routes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "usage": {
+            "type": "string",
+            "example": "Visit any of the above routes to see how errors are handled"
+          },
+          "note": {
+            "type": "string",
+            "example": "Check the server console for detailed error logs"
+          }
+        }
+      },
+      "SuccessTestResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "This is a successful response for comparison"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-07-03T10:30:00.000Z"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "type": "string",
+                "example": "test-user"
+              },
+              "id": {
+                "type": "string",
+                "example": "12345"
+              }
+            }
+          }
+        }
+      },
+      "TestErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "fail"
+          },
+          "message": {
+            "type": "string",
+            "example": "This is a test 400 error - Bad Request"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-07-03T10:30:00.000Z"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "General",
+      "description": "General API information and health checks"
+    },
+    {
+      "name": "Users",
+      "description": "User management operations (CRUD)"
+    },
+    {
+      "name": "Testing",
+      "description": "Error testing and debugging routes"
+    }
+  ]
+} 
