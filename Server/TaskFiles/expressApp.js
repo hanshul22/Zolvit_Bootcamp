@@ -3,9 +3,21 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
-// Middleware to log requests
+// Enhanced middleware to log requests with response details
 app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    const start = Date.now();
+    
+    // Log the incoming request
+    console.log(`[${new Date().toISOString()}] Incoming: ${req.method} ${req.url}`);
+    
+    // Override res.end to log response details
+    const originalEnd = res.end;
+    res.end = function(...args) {
+        const duration = Date.now() - start;
+        console.log(`[${new Date().toISOString()}] Completed: ${req.method} ${req.url} - Status: ${res.statusCode} - Duration: ${duration}ms`);
+        originalEnd.apply(this, args);
+    };
+    
     next();
 });
 
